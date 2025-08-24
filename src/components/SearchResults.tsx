@@ -9,6 +9,7 @@ interface SearchResultsProps {
   selectedRoute: BusRoute | null;
   onRouteSelect: (route: BusRoute) => void;
   formatTime: (minutes: number) => string;
+  calledBuses: Set<string>;
 }
 
 const SearchResults: React.FC<SearchResultsProps> = ({
@@ -18,7 +19,8 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   currentSlide,
   selectedRoute,
   onRouteSelect,
-  formatTime
+  formatTime,
+  calledBuses
 }) => {
   // 검색어 하이라이트 함수
   const highlightSearchTerm = (text: string, searchTerm: string) => {
@@ -66,6 +68,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                 .map((route) => {
                   const routeArrivals = mockArrivals.filter(arrival => arrival.routeNumber === route.routeNumber);
                   const nextArrival = routeArrivals.sort((a, b) => a.arrivalTime - b.arrivalTime)[0];
+                  const isCalled = calledBuses.has(route.routeNumber.toLowerCase());
                   
                   return routeArrivals.length > 0 ? (
                     <div
@@ -73,13 +76,42 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                       onClick={() => onRouteSelect(route)}
                       style={{
                         padding: '20px',
-                        background: 'white',
-                        border: selectedRoute?.id === route.id ? '4px solid #2563eb' : '3px solid #e5e7eb',
+                        background: isCalled ? 'linear-gradient(135deg, #fef3c7, #fbbf24)' : 'white',
+                        border: isCalled 
+                          ? '4px solid #f59e0b' 
+                          : selectedRoute?.id === route.id 
+                            ? '4px solid #2563eb' 
+                            : '3px solid #e5e7eb',
                         borderRadius: '16px',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                        cursor: 'pointer'
+                        boxShadow: isCalled 
+                          ? '0 8px 25px rgba(245, 158, 11, 0.25)' 
+                          : '0 2px 4px rgba(0,0,0,0.05)',
+                        cursor: 'pointer',
+                        position: 'relative',
+                        overflow: 'hidden'
                       }}
                     >
+                      {/* 호출 벨 아이콘 */}
+                      {isCalled && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '10px',
+                          right: '10px',
+                          background: '#f59e0b',
+                          color: 'white',
+                          borderRadius: '50%',
+                          width: '24px',
+                          height: '24px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '12px',
+                          fontWeight: '700',
+                          animation: 'ring 1s ease-in-out infinite'
+                        }}>
+                          🔔
+                        </div>
+                      )}
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                           <div style={{
@@ -131,13 +163,42 @@ const SearchResults: React.FC<SearchResultsProps> = ({
                       onClick={() => onRouteSelect(route)}
                       style={{
                         padding: '20px',
-                        background: 'white',
-                        border: selectedRoute?.id === route.id ? '4px solid #2563eb' : '3px solid #e5e7eb',
+                        background: isCalled ? 'linear-gradient(135deg, #fef3c7, #fbbf24)' : 'white',
+                        border: isCalled 
+                          ? '4px solid #f59e0b' 
+                          : selectedRoute?.id === route.id 
+                            ? '4px solid #2563eb' 
+                            : '3px solid #e5e7eb',
                         borderRadius: '16px',
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                        cursor: 'pointer'
+                        boxShadow: isCalled 
+                          ? '0 8px 25px rgba(245, 158, 11, 0.25)' 
+                          : '0 2px 4px rgba(0,0,0,0.05)',
+                        cursor: 'pointer',
+                        position: 'relative',
+                        overflow: 'hidden'
                       }}
                     >
+                      {/* 호출 벨 아이콘 */}
+                      {isCalled && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '10px',
+                          right: '10px',
+                          background: '#f59e0b',
+                          color: 'white',
+                          borderRadius: '50%',
+                          width: '24px',
+                          height: '24px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '12px',
+                          fontWeight: '700',
+                          animation: 'ring 1s ease-in-out infinite'
+                        }}>
+                          🔔
+                        </div>
+                      )}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         <div style={{
                           background: route.color,
@@ -167,6 +228,16 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           ))}
         </div>
       </div>
+      
+      {/* CSS 애니메이션 */}
+      <style>
+        {`
+          @keyframes ring {
+            0%, 100% { transform: rotate(-15deg); }
+            50% { transform: rotate(15deg); }
+          }
+        `}
+      </style>
     </div>
   );
 };

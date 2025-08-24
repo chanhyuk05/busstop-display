@@ -7,6 +7,7 @@ interface BusArrivalInfoProps {
   currentSlide: number;
   setCurrentSlide: (slide: number) => void;
   formatTime: (minutes: number) => string;
+  calledBuses: Set<string>;
 }
 
 const BusArrivalInfo: React.FC<BusArrivalInfoProps> = ({
@@ -14,7 +15,8 @@ const BusArrivalInfo: React.FC<BusArrivalInfoProps> = ({
   mockArrivals,
   currentSlide,
   setCurrentSlide,
-  formatTime
+  formatTime,
+  calledBuses
 }) => {
   // 중복 제거된 버스 목록
   const uniqueArrivals = mockArrivals.reduce((unique: BusArrival[], bus) => {
@@ -50,18 +52,46 @@ const BusArrivalInfo: React.FC<BusArrivalInfoProps> = ({
             >
               {uniqueArrivals
                 .slice(slideIndex * 4, (slideIndex + 1) * 4)
-                .map((bus, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      padding: '20px',
-                      background: 'white',
-                      border: '3px solid #e5e7eb',
-                      borderRadius: '16px',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
-                    }}
-                  >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                .map((bus, index) => {
+                  const isCalled = calledBuses.has(bus.routeNumber.toLowerCase());
+                  
+                  return (
+                    <div
+                      key={index}
+                      style={{
+                        padding: '20px',
+                        background: isCalled ? 'linear-gradient(135deg, #fef3c7, #fbbf24)' : 'white',
+                        border: isCalled ? '4px solid #f59e0b' : '3px solid #e5e7eb',
+                        borderRadius: '16px',
+                        boxShadow: isCalled 
+                          ? '0 8px 25px rgba(245, 158, 11, 0.25)' 
+                          : '0 2px 4px rgba(0,0,0,0.05)',
+                        position: 'relative',
+                        overflow: 'hidden'
+                      }}
+                    >
+                      {/* 호출 벨 아이콘 */}
+                      {isCalled && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '10px',
+                          right: '10px',
+                          background: '#f59e0b',
+                          color: 'white',
+                          borderRadius: '50%',
+                          width: '24px',
+                          height: '24px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '12px',
+                          fontWeight: '700',
+                          animation: 'ring 1s ease-in-out infinite'
+                        }}>
+                          🔔
+                        </div>
+                      )}
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         <div style={{
                           background: mockRoutes.find(r => r.routeNumber === bus.routeNumber)?.color || '#666',
@@ -104,9 +134,10 @@ const BusArrivalInfo: React.FC<BusArrivalInfoProps> = ({
                           {bus.remainingStops}정거장 전
                         </div>
                       </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
             </div>
           ))}
         </div>
@@ -136,6 +167,16 @@ const BusArrivalInfo: React.FC<BusArrivalInfoProps> = ({
           </div>
         )}
       </div>
+      
+      {/* CSS 애니메이션 */}
+      <style>
+        {`
+          @keyframes ring {
+            0%, 100% { transform: rotate(-15deg); }
+            50% { transform: rotate(15deg); }
+          }
+        `}
+      </style>
     </div>
   );
 };

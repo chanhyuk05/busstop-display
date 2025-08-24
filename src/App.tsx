@@ -18,6 +18,7 @@ function App() {
   const [reservedBus, setReservedBus] = useState<string>('');
   const [countdown, setCountdown] = useState(5);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [calledBuses, setCalledBuses] = useState<Set<string>>(new Set());
 
   // 시간 업데이트
   useEffect(() => {
@@ -89,6 +90,9 @@ function App() {
     setReservedBus(busNumber);
     setIsReserved(true);
     setCountdown(5);
+    
+    // 호출된 버스 번호를 기록
+    setCalledBuses(prev => new Set([...prev, busNumber.toLowerCase()]));
     
     // 1초마다 카운트다운 업데이트
     const countdownInterval = setInterval(() => {
@@ -163,6 +167,7 @@ function App() {
           selectedRoute={selectedRoute}
           onRouteSelect={handleRouteSelect}
           formatTime={formatTime}
+          calledBuses={calledBuses}
         />
 
         {/* 실시간 버스 도착 정보 - 검색어가 없을 때만 표시 */}
@@ -173,6 +178,7 @@ function App() {
             currentSlide={currentSlide}
             setCurrentSlide={setCurrentSlide}
             formatTime={formatTime}
+            calledBuses={calledBuses}
           />
         )}
       </div>
